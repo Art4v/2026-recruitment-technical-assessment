@@ -44,7 +44,33 @@ def parse():
 # Takes in a recipeName and returns it in a form that 
 def parse_handwriting(recipeName: str) -> Union[str | None]:
 	# TODO: implement me
-	return recipeName
+
+	# initialise result variable
+	res = ""
+
+	# pass over input string
+	for i, c in enumerate(recipeName):
+		# check if normal character
+		if c.isalpha():
+			# check if needs capitalisation
+			if i == 0 or recipeName[i - 1] in {' ', '-', '_'}:
+				c = c.upper()
+			else:
+				c = c.lower()
+			
+			# add to results variable
+			res += c
+			
+		# if space, dash, or underscore and not consecutive
+		if c in {' ', '-', '_'} and recipeName[i - 1] not in {' ', '-', '_'}:
+			res += ' '
+		
+	# handle null case
+	if not res:
+		return None
+
+	# return parsed string
+	return res.strip()
 
 
 # [TASK 2] ====================================================================
@@ -52,6 +78,24 @@ def parse_handwriting(recipeName: str) -> Union[str | None]:
 @app.route('/entry', methods=['POST'])
 def create_entry():
 	# TODO: implement me
+
+	'''Post Request Verrification'''
+	# check valid type (only recipe/ingredient)
+
+	# check valid cooktime (> 0)
+
+	# check valid entry names
+
+
+
+	'''Post Verification'''
+	# add recipie/ingredient to cookbook
+	
+	# return 200 ok
+
+
+
+
 	return 'not implemented', 500
 
 
