@@ -69,8 +69,10 @@ def parse_handwriting(recipeName: str) -> Union[str | None]:
 	if not res:
 		return None
 
+	recipeName = res.strip()
+
 	# return parsed string
-	return res.strip()
+	return recipeName
 
 
 # [TASK 2] ====================================================================
@@ -79,17 +81,38 @@ def parse_handwriting(recipeName: str) -> Union[str | None]:
 def create_entry():
 	# TODO: implement me
 
-	'''Post Request Verrification'''
+	# get post request
+	entry = request.get_json()
+
+	'''Post Request Verification'''
 	# check valid type (only recipe/ingredient)
+	entry_type = entry.get("type").lower()
+	if entry_type != "recipe" and entry_type != "ingredient":
+		return 'invalid type', 400
 
 	# check valid cooktime (> 0)
+	entry_cooktime = entry.get("cooktime")
+	if not entry_cooktime >= 0:
+		return 'invalid cooktime', 400
 
-	# check valid entry names
+	# check entry names are unique
 
+	current_entry_names = set()		
+
+
+
+
+
+	# loop over each entry, checking if the name is in entries
+
+
+
+	# recipie requiedItems can only have one element per name
 
 
 	'''Post Verification'''
 	# add recipie/ingredient to cookbook
+
 	
 	# return 200 ok
 
