@@ -27,8 +27,9 @@ class Ingredient(CookbookEntry):
 # =============================================================================
 app = Flask(__name__)
 
-# Store your recipes here!
-cookbook = None
+# Store your recipes here! 
+# note: this was motified from 'None' to '{}'
+cookbook = {}
 
 # Task 1 helper (don't touch)
 @app.route("/parse", methods=['POST'])
@@ -82,44 +83,74 @@ def create_entry():
 	# TODO: implement me
 
 	# get post request
-	entry = request.get_json()
+	data = request.get_json()
 
-	'''Post Request Verification'''
-	# check valid type (only recipe/ingredient)
-	entry_type = entry.get("type").lower()
-	if entry_type != "recipe" and entry_type != "ingredient":
+	'''Post Request Verification whilst Creating Relevant Objects'''
+	# if recipe
+	if data.get("type") == "recipe":
+		# check if duplicate recipe name in cookbook
+		name = data.get("name")
+
+		for entry in cookbook.values():
+			if entry.name == name:
+				return 'duplicate name', 400
+
+		
+		# check if duplicate required items
+		requiredItems = []
+
+		for item in data.get("requiredItems"):
+			for current in requiredItems:
+				if current.name == item["name"]:
+					return 'duplicate required item', 400
+
+			required_item = RequiredItem(
+				name=item["name"],
+				quantity=item["quantity"]
+			)
+			
+			requiredItems.append(required_item)
+
+		# create recipe object
+		recipe = Recipe(
+			name=name,
+			required_items=requiredItems
+		)
+
+		# append final object to cookbook
+		cookbook[recipe.name] = recipe
+
+
+	# if ingredient
+	elif data.get("type") == "ingredient":
+		# check if duplicate ingredient name
+		name = data.get("name")
+
+		for entry in cookbook.values():
+			if entry.name == name:
+				return 'duplicate name', 400
+
+		# check if valid cooktime
+		cook_time = int(data.get("cookTime"))
+		
+		if cook_time < 0:
+			return 'invalid cooktime', 400
+		
+		# create ingredient object
+		ingredient = Ingredient(
+			name=name,
+			cook_time=cook_time
+		)
+
+		cookbook[ingredient.name] = ingredient
+
+	# if invalid
+	else:
 		return 'invalid type', 400
-
-	# check valid cooktime (> 0)
-	entry_cooktime = entry.get("cooktime")
-	if not entry_cooktime >= 0:
-		return 'invalid cooktime', 400
-
-	# check entry names are unique
-
-	current_entry_names = set()		
-
-
-
-
-
-	# loop over each entry, checking if the name is in entries
-
-
-
-	# recipie requiedItems can only have one element per name
-
-
-	'''Post Verification'''
-	# add recipie/ingredient to cookbook
-
 	
-	# return 200 ok
 
-
-
-
-	return 'not implemented', 500
+	# return 200 OK
+	return 'cookbook updated', 200
 
 
 # [TASK 3] ====================================================================
@@ -127,6 +158,7 @@ def create_entry():
 @app.route('/summary', methods=['GET'])
 def summary():
 	# TODO: implement me
+	
 	return 'not implemented', 500
 
 
