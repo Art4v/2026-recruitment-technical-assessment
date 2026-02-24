@@ -4,8 +4,9 @@ from flask import Flask, request, jsonify
 import re
 
 # ==== Type Definitions, feel free to add or modify ===========================
-@dataclass
+@dataclass # edited to include type
 class CookbookEntry:
+	type: str
 	name: str
 
 @dataclass
@@ -113,6 +114,7 @@ def create_entry():
 
 		# create recipe object
 		recipe = Recipe(
+			type="recipe",
 			name=name,
 			required_items=requiredItems
 		)
@@ -138,6 +140,7 @@ def create_entry():
 		
 		# create ingredient object
 		ingredient = Ingredient(
+			type="ingredient",
 			name=name,
 			cook_time=cook_time
 		)
@@ -159,7 +162,20 @@ def create_entry():
 def summary():
 	# TODO: implement me
 	
-	return 'not implemented', 500
+	# get name of entry required
+	name = request.args.get('name')
+
+	# get entry from cookbook with that name
+	entry = cookbook.get(name)
+
+	if entry is None:
+		return 'entry not found', 400
+	
+	# if entry.type != "recipe":
+	# 	return 'not a recipe', 400
+
+	# returnentry
+	return jsonify(entry), 200
 
 
 # =============================================================================
