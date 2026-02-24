@@ -168,13 +168,21 @@ def summary():
 	# get entry from cookbook with that name
 	entry = cookbook.get(name)
 
+	# if no entry
 	if entry is None:
 		return 'entry not found', 400
 	
-	# if entry.type != "recipe":
-	# 	return 'not a recipe', 400
+	# if entry is not a recipe
+	if entry.type != "recipe":
+		return 'not a recipe', 400
 
-	# returnentry
+	# if entry is recipe, check if required items in cookbook
+	else:
+		for required_item in entry.required_items:
+			if required_item.name not in cookbook:
+				return 'required item not found', 400
+
+	# return entry
 	return jsonify(entry), 200
 
 
